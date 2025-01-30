@@ -40,6 +40,7 @@ Definition Pos_eqMixin := Equality.Mixin Pos_eqP.
 
 Canonical Structure Pos_eqType := Equality.Pack (sort := BinNums.positive) (Equality.Class Pos_eqMixin).
 
+
 (** * Equalities **)
 
 (** Similar to [set (name := term)], but introduce an equality instead of a local definition. **)
