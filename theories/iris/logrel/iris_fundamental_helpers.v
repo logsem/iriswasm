@@ -499,23 +499,28 @@ Section fundamental.
     iFrame "Hw".
   Qed.
 
-  Lemma interp_instance_get_mem C hl i :
-    tc_memory C ≠ [] ->
+  Lemma interp_instance_get_mem C hl i j m:
+    List.nth_error (tc_memory C) j = Some m ->
     ⊢ interp_instance C hl i -∗
-      ∃ τm mem, ⌜nth_error (tc_memory C) 0 = Some τm⌝
-              ∗ ⌜nth_error (inst_memory i) 0 = Some mem⌝
-              ∗ (N.of_nat mem) ↪[wmlimit] lim_max τm
+      ∃ mem, 
+        ⌜nth_error (inst_memory i) j = Some mem⌝
+              ∗ (N.of_nat mem) ↪[wmlimit] lim_max m
               ∗ interp_mem (N.of_nat mem).
   Proof.
     destruct C,i.
     iIntros (Hnil) "[_ [_ [ _ [#Hi _]]]]".
     iSimpl.
     simpl in Hnil.
-    destruct tc_memory;try done.
-    iSimpl in "Hi".
-    destruct inst_memory;try done.
-    iDestruct "Hi" as "[? ?]".
-    iExists _,_. repeat iSplit;eauto.    
+    iDestruct (big_sepL2_length with "Hi") as "%Hlen".
+    assert (nth_error tc_memory j <> None) as Hnone; first by intros H; rewrite H in Hnil.
+    apply nth_error_Some in Hnone.
+    rewrite Hlen in Hnone.
+    apply nth_error_Some in Hnone.
+    destruct (nth_error inst_memory j) eqn:Hj => //.
+    rewrite nth_error_lookup in Hj.
+    rewrite nth_error_lookup in Hnil.
+    iDestruct (big_sepL2_lookup with "Hi") as "[Hlim Hmem]" => //. 
+    iExists _. repeat iSplit;eauto.    
   Qed.
 
   Fixpoint pull_base_l_drop_len {i : nat} (vh : valid_holed i) (len : nat) :=

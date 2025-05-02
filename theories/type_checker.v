@@ -358,22 +358,34 @@ in
         else CT_bot
       end
     else CT_bot
-  | BI_load t tp_sx a off =>
-    if (C.(tc_memory) != nil) && load_store_t_bounds a (option_projl tp_sx) t
-    then type_update ts [::CTA_some T_i32] (CT_type [::t])
-    else CT_bot
-  | BI_store t tp a off =>
-    if (C.(tc_memory) != nil) && load_store_t_bounds a tp t
-    then type_update ts [::CTA_some T_i32; CTA_some t] (CT_type [::])
-    else CT_bot
-  | BI_current_memory =>
-    if C.(tc_memory) != nil
-    then type_update ts [::] (CT_type [::T_i32])
-    else CT_bot
-  | BI_grow_memory =>
-    if C.(tc_memory) != nil
-    then type_update ts [::CTA_some T_i32] (CT_type [::T_i32])
-    else CT_bot
+  | BI_load i t tp_sx a off =>
+      match List.nth_error (tc_memory C) i with
+      | Some _ => 
+          if load_store_t_bounds a (option_projl tp_sx) t
+          then type_update ts [::CTA_some T_i32] (CT_type [::t])
+          else CT_bot
+      | _ => CT_bot
+      end
+  | BI_store i t tp a off =>
+      match List.nth_error (tc_memory C) i with
+      | Some _ => 
+          if load_store_t_bounds a tp t
+          then type_update ts [::CTA_some T_i32; CTA_some t] (CT_type [::])
+          else CT_bot
+      | _ => CT_bot
+      end
+  | BI_current_memory i =>
+      match List.nth_error (tc_memory C) i with
+      | Some _ => 
+          type_update ts [::] (CT_type [::T_i32])
+      | _ => CT_bot
+      end
+  | BI_grow_memory i =>
+      match List.nth_error (tc_memory C) i with
+      | Some _ => 
+          type_update ts [::CTA_some T_i32] (CT_type [::T_i32])
+      | _ => CT_bot
+      end
   end.
 
 Fixpoint collect_at_inds A (l : seq A) (ns : seq nat) : seq A :=

@@ -275,18 +275,18 @@ Fixpoint pp_basic_instruction (i : indentation) (be : basic_instruction) : strin
     indent i (with_fg be_style "global.get " ++ pp_immediate x ++ newline)
   | BI_set_global x =>
     indent i (with_fg be_style "global.set " ++ pp_immediate x ++ newline)
-  | BI_load vt None a o =>
-    indent i (pp_value_type vt ++ ".load " ++ pp_ao a o ++ newline)
-  | BI_load vt (Some ps) a o =>
-    indent i (pp_value_type vt ++ ".load" ++ pp_ps ps ++ " " ++ pp_ao a o ++ newline)
-  | BI_store vt None a o =>
-    indent i (pp_value_type vt ++ ".store " ++ pp_ao a o ++ newline)
-  | BI_store vt (Some p) a o =>
-    indent i (pp_value_type vt ++ ".store" ++ pp_packing p ++ " " ++ pp_ao a o ++ newline)
-  | BI_current_memory =>
-    indent i (with_fg be_style "memory.size" ++ newline ++ newline)
-  | BI_grow_memory =>
-    indent i (with_fg be_style "memory.grow" ++ newline)
+  | BI_load i vt None a o =>
+    indent i (pp_value_type vt ++ ".load " ++ pp_immediate i ++ pp_ao a o ++ newline)
+  | BI_load i vt (Some ps) a o =>
+    indent i (pp_value_type vt ++ ".load" ++ pp_immediate i ++ pp_ps ps ++ " " ++ pp_ao a o ++ newline)
+  | BI_store i vt None a o =>
+    indent i (pp_value_type vt ++ ".store " ++ pp_immediate i ++ pp_ao a o ++ newline)
+  | BI_store i vt (Some p) a o =>
+    indent i (pp_value_type vt ++ ".store" ++ pp_immediate i ++ pp_packing p ++ " " ++ pp_ao a o ++ newline)
+  | BI_current_memory i =>
+    indent i (with_fg be_style "memory.size" ++ pp_immediate i ++ newline ++ newline)
+  | BI_grow_memory i =>
+    indent i (with_fg be_style "memory.grow" ++ pp_immediate i ++ newline)
   | BI_const v =>
     indent i (pp_value v)
   | BI_unop vt (Unop_i uoi) =>

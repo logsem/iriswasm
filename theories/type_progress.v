@@ -4,6 +4,8 @@ From mathcomp Require Import ssreflect ssrfun ssrnat ssrbool eqtype seq.
 
 From Wasm Require Export operations typing datatypes_properties typing opsem properties type_preservation.
 
+Set Bullet Behavior "Strict Subproofs".
+
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -240,24 +242,65 @@ Proof.
   by move/ltP in H4.
 Qed.
 
-Lemma mem_context_store: forall s i C,
+Lemma nth_error_lt_Some {A} i (l : list A):
+  i < length l -> exists x, List.nth_error l i = Some x.
+Proof.
+  generalize dependent i.
+  induction l => //=.
+  destruct i => //=.
+  by exists a.
+       intros H. apply IHl. lias.
+Qed.
+
+Lemma nth_error_Some_lt {A} i (l: list A) x:
+  List.nth_error l i = Some x -> i < length l.
+Proof.
+  generalize dependent i.
+  induction l => //=.
+  all: destruct i => //=.
+  intros H.  apply IHl in H. lias.
+Qed.
+
+Lemma Forall2_nth_error {A B} (l1 : list A) (l2 : list B) P i x1 x2 :
+  List.Forall2 P l1 l2 ->
+  List.nth_error l1 i = Some x1 ->
+  List.nth_error l2 i = Some x2 ->
+  P x1 x2.
+Proof.
+  generalize dependent i. generalize dependent l2.
+  induction l1 => //=.
+  all: destruct i => //=. 
+  all: destruct l2 => //=.
+  intros H H1 H2. inversion H1; inversion H2; subst.
+  inversion H => //.
+  intros H H1 H2.
+  inversion H; subst.
+  eapply IHl1; eauto.
+Qed. 
+       
+
+Lemma mem_context_store: forall s i j m C,
     inst_typing s i C ->
-    tc_memory C <> [::] ->
-    exists n, smem_ind s i = Some n /\
+    List.nth_error (tc_memory C) j = Some m ->
+    exists n, smem_ind s i j = Some n /\
               List.nth_error (s_mems s) n <> None.
 Proof.
-  move => s i C HIT HMemory.
+  move => s i j m C HIT Hj.
   unfold inst_typing, typing.inst_typing in HIT.
   destruct i => //=. destruct C => //=.
   destruct tc_local => //=. destruct tc_label => //=. destruct tc_return => //=.
   remove_bools_options.
-  simpl in HMemory. unfold smem_ind. simpl.
+  simpl in Hj. unfold smem_ind. simpl.
   remember H0 as H4. clear HeqH4.
   apply all2_size in H0.
-  destruct inst_memory => //=; first by destruct tc_memory.
-  exists m. split => //.
-  destruct tc_memory => //.
-  simpl in H4.
+  apply nth_error_Some_lt in Hj as Hsize.
+  rewrite length_is_size -H0 -length_is_size in Hsize.
+  apply nth_error_lt_Some in Hsize as [n Hn].
+  exists n. split => //.
+  apply all2_Forall2 in H4.
+  eapply Forall2_nth_error in H4.
+  2: exact Hn.
+  2: exact Hj.
   unfold memi_agree in H4.
   by remove_bools_options.
 Qed.
@@ -714,14 +757,14 @@ Proof.
     + (* Load Some *)
       destruct p as [tp sx].
       simpl in H0. remove_bools_options.
-      destruct (load_packed sx m (Wasm_int.N_of_uint i32m s0) off (length_tp tp) (length_t t)) eqn:HLoadResult.
+      destruct (load_packed sx m0 (Wasm_int.N_of_uint i32m s0) off (length_tp tp) (length_t t)) eqn:HLoadResult.
       * exists [::AI_basic (BI_const (wasm_deserialise b t))].
         by eapply r_load_packed_success; eauto.
       * exists [::AI_trap].
         by eapply r_load_packed_failure; eauto.
     + (* Load None *)
       simpl in H0.
-      destruct (load m (Wasm_int.N_of_uint i32m s0) off (length_t t)) eqn:HLoadResult.
+      destruct (load m0 (Wasm_int.N_of_uint i32m s0) off (length_t t)) eqn:HLoadResult.
       * exists [::AI_basic (BI_const (wasm_deserialise b t))].
         by eapply r_load_success; eauto.
       * exists [::AI_trap].
@@ -737,8 +780,8 @@ Proof.
     destruct tp as [tp |].
     + (* Store Some *)
       simpl in H0. remove_bools_options.
-      destruct (store_packed m (Wasm_int.N_of_uint i32m s0) off (bits v0) (length_tp tp)) eqn:HStoreResult.
-      * exists (upd_s_mem s (update_list_at s.(s_mems) n m0)), f, [::].
+      destruct (store_packed m0 (Wasm_int.N_of_uint i32m s0) off (bits v0) (length_tp tp)) eqn:HStoreResult.
+      * exists (upd_s_mem s (update_list_at s.(s_mems) n m1)), f, [::].
         eapply r_store_packed_success; eauto.
         by unfold types_agree; apply/eqP.
       * exists s, f, [::AI_trap].
@@ -746,8 +789,8 @@ Proof.
         by unfold types_agree; apply/eqP.
     + (* Store None *)
       simpl in H0.
-      destruct (store m (Wasm_int.N_of_uint i32m s0) off (bits v0) (length_t (typeof v0))) eqn:HStoreResult.
-      * exists (upd_s_mem s (update_list_at s.(s_mems) n m0)), f, [::].
+      destruct (store m0 (Wasm_int.N_of_uint i32m s0) off (bits v0) (length_t (typeof v0))) eqn:HStoreResult.
+      * exists (upd_s_mem s (update_list_at s.(s_mems) n m1)), f, [::].
         eapply r_store_success; eauto.
         by unfold types_agree; apply/eqP.
       * exists s, f, [::AI_trap].
@@ -760,7 +803,7 @@ Proof.
     eapply mem_context_store in H; eauto.
     destruct H as [n [HMemInd HMem]].
     destruct (List.nth_error (s_mems s) n) eqn:HN => //=. 
-    exists s, f, [::AI_basic (BI_const (VAL_int32 (Wasm_int.int_of_Z i32m (BinInt.Z.of_nat (mem_size m)))))].
+    exists s, f, [::AI_basic (BI_const (VAL_int32 (Wasm_int.int_of_Z i32m (BinInt.Z.of_nat (mem_size m0)))))].
     by eapply r_current_memory; eauto.
 
   - (* Grow_memory *)
@@ -1457,7 +1500,7 @@ Proof.
         exists s, f, [::AI_trap].
         apply r_simple.
         by apply rs_label_trap.
-        by apply v_to_e_is_const_list.
+      * by apply v_to_e_is_const_list.
     + (* reduce *)
       destruct H as [s' [f' [es' HReduce]]].
       right.
@@ -1513,9 +1556,9 @@ Proof.
   by repeat eexists.
   all: eapply t_progress_e with (vcs := [::]) (ret := None) (lab := [::]) in H7; eauto.
   all: try by destruct H7 ; [left | right ; right].
-  - all: try by rewrite Hes.
-  - all: try by eapply s_typing_lf_br; eauto.
-  - all: try by eapply s_typing_lf_return; eauto.
+  all: try by rewrite Hes.
+  all: try by eapply s_typing_lf_br; eauto.
+  all: try by eapply s_typing_lf_return; eauto.
   - assert (E : tc_local C1 = [::]).
     { by eapply inst_t_context_local_empty; eauto. }
     rewrite E. simpl.

@@ -39,7 +39,7 @@ Definition is_empty_op :=
   [
     BI_get_local 0 ;
     BI_get_local 0 ;
-    BI_load T_i32 None N.zero N.zero ;
+    BI_load 0 T_i32 None N.zero N.zero ;
     BI_relop T_i32 (Relop_i ROI_eq)
   ].
 

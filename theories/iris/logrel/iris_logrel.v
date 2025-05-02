@@ -267,14 +267,10 @@ Section logrel.
                         end
             | None => True
             end) ∗
-            (* Linear Memory *)
-           (match nth_error mems_t 0 with
-            | Some τm => match nth_error ms 0 with
-                        | Some a => (N.of_nat a) ↪[wmlimit] (lim_max τm) ∗ interp_mem (N.of_nat a)
-                        | None => False
-                        end
-            | None => True
-            end) ∗
+           (* Linear Memory *)
+           ([∗ list] τm; a ∈ mems_t; ms,  
+              (N.of_nat a) ↪[wmlimit] (lim_max τm) ∗ interp_mem (N.of_nat a)
+           ) ∗
             (* Global declarations *)
            ([∗ list] kg;gt ∈ gs;tgs, interp_global gt (N.of_nat kg)))%I.
 

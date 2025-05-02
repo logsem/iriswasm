@@ -134,20 +134,20 @@ Inductive be_typing : t_context -> seq basic_instruction -> function_type -> Pro
   tg_t g = t ->
   is_mut g ->
   be_typing C [::BI_set_global i] (Tf [::t] [::])
-| bet_load : forall C a off tp_sx t,
-  tc_memory C <> nil ->
+| bet_load : forall C i m a off tp_sx t,
+    List.nth_error (tc_memory C) i = Some m ->
   load_store_t_bounds a (option_projl tp_sx) t ->
-  be_typing C [::BI_load t tp_sx a off] (Tf [::T_i32] [::t])
-| bet_store : forall C a off tp t,
-  tc_memory C <> nil ->
+  be_typing C [::BI_load i t tp_sx a off] (Tf [::T_i32] [::t])
+| bet_store : forall C i m a off tp t,
+        List.nth_error (tc_memory C) i = Some m ->
   load_store_t_bounds a tp t ->
-  be_typing C [::BI_store t tp a off] (Tf [::T_i32; t] [::])
-| bet_current_memory : forall C,
-  tc_memory C <> nil ->
-  be_typing C [::BI_current_memory] (Tf [::] [::T_i32])
-| bet_grow_memory : forall C,
-  tc_memory C <> nil ->
-  be_typing C [::BI_grow_memory] (Tf [::T_i32] [::T_i32])
+  be_typing C [::BI_store i t tp a off] (Tf [::T_i32; t] [::])
+| bet_current_memory : forall C i m,
+        List.nth_error (tc_memory C) i = Some m ->
+  be_typing C [::BI_current_memory i] (Tf [::] [::T_i32])
+| bet_grow_memory : forall C i m,
+    List.nth_error (tc_memory C) i = Some m ->
+  be_typing C [::BI_grow_memory i] (Tf [::T_i32] [::T_i32])
 | bet_empty : forall C,
   be_typing C [::] (Tf [::] [::])
 | bet_composition : forall C es e t1s t2s t3s,

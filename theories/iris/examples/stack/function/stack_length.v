@@ -38,7 +38,7 @@ Section code.
 Definition length_stack_op :=
   [
     BI_get_local 0 ;
-    BI_load T_i32 None N.zero N.zero ;
+    BI_load 0 T_i32 None N.zero N.zero ;
     BI_get_local 0 ;
     BI_binop T_i32 (Binop_i BOI_sub) ;
     (i32const 4) ;

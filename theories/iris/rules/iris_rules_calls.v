@@ -87,7 +87,7 @@ Context `{!wasmG Σ}.
       assert (first_instr (ves ++ [AI_invoke a]) = Some (AI_invoke a,0)) as Hf.
       { apply first_instr_const. eapply to_val_const_list. eauto. }
       eapply reduce_det in H as HH;[|apply Hred].
-      destruct HH as [HH | [[? Hstart] |  (?&?&?&Hstart & Hstart1 & Hstart2 & Hσ)]]; try done.
+      destruct HH as [HH | [(? & ? & Hstart) |  (?&?&?&Hstart & Hstart1 & Hstart2 & Hσ)]]; try done.
       simplify_eq. iApply bi.sep_exist_l. iExists f. iFrame.
       iSplit => //. iIntros "Hf".
       iSpecialize ("HΦ" with "[$]"). iFrame.
@@ -142,7 +142,7 @@ Proof.
     iModIntro.
     destruct σ2 as [[ws' locs' ] inst' ] => //=.
     destruct HStep as [H [-> ->]].
-    eapply reduce_det in H as [? | [ [??] | (?&?&?&?&?&?&?)]] ; last first.
+    eapply reduce_det in H as [? | [ (?&?&?) | (?&?&?&?&?&?&?)]] ; last first.
     eapply (r_invoke_host (t2s := t2s)) => //.
     rewrite nth_error_lookup => //=.
     rewrite gmap_of_list_lookup Nat2N.id in Hlook => //.
@@ -200,7 +200,7 @@ Qed.
       assert (first_instr LI = Some (AI_basic (BI_call i),0 + j)).
       { eapply starts_with_lfilled;eauto. auto. }
       eapply reduce_det in H as HH;[|eapply r_label;[|eauto..];apply r_call; rewrite /= nth_error_lookup //]. 
-      destruct HH as [HH | [[? Hstart] | (?&?&? & Hstart & Hstart1 & Hstart2 & Hσ)  ]]; try done; try congruence.
+      destruct HH as [HH | [(?&?& Hstart) | (?&?&? & Hstart & Hstart1 & Hstart2 & Hσ)  ]]; try done; try congruence.
       simplify_eq. iApply bi.sep_exist_l. iExists _. iFrame.
       iSplit =>//. iIntros "?". iApply ("HΦ" with "[$]"). auto.
   Qed.
@@ -277,7 +277,7 @@ Qed.
       eapply reduce_det in H as HH;[|apply Hred'].
       assert (first_instr LI = Some (AI_basic (BI_call_indirect i),0+d)).
       { eapply starts_with_lfilled;eauto. by cbn. }
-      destruct HH as [HH | [[? Hstart] | (?&?&? & Hstart & Hstart1 & Hstart2 & Hσ)  ]]; try done; try congruence.
+      destruct HH as [HH | [(?&?& Hstart) | (?&?&? & Hstart & Hstart1 & Hstart2 & Hσ)  ]]; try done; try congruence.
       simplify_eq. iApply bi.sep_exist_l. iExists _. iFrame.
       iSplit =>//. iIntros "Hf".
       iSpecialize ("Hcont" with "[$]").
@@ -349,7 +349,7 @@ Qed.
       destruct σ2 as [[ws' locs'] inst'].
       destruct HStep as (H & -> & ->).
       eapply reduce_det in H as HH;[|apply Hred].
-      destruct HH as [HH | [[? Hstart] |  (?&?&? & Hstart & Hstart1 & Hstart2 & Hσ) ]]; try done; try congruence.
+      destruct HH as [HH | [(?&?& Hstart) |  (?&?&? & Hstart & Hstart1 & Hstart2 & Hσ) ]]; try done; try congruence.
       simplify_eq. iFrame. done.
   Qed.
 
@@ -385,7 +385,7 @@ Qed.
       destruct σ2 as [[ ws' locs'] inst'].
       destruct HStep as (H & -> & ->).
       eapply reduce_det in H as HH;[|apply Hred].
-      destruct HH as [HH | [[? Hstart] | (?&?&? & Hstart & Hstart1 & Hstart2 & Hσ) ]]; try done; try congruence.
+      destruct HH as [HH | [(?&?& Hstart) | (?&?&? & Hstart & Hstart1 & Hstart2 & Hσ) ]]; try done; try congruence.
       simplify_eq. iFrame. done.
   Qed.
 
@@ -427,7 +427,7 @@ Qed.
       destruct σ2 as [[ ws' locs'] inst'].
       destruct HStep as (H & -> & ->).
       eapply reduce_det in H as HH;[|apply Hred].
-      destruct HH as [HH | [[? Hstart] | (?&?&? & Hstart & Hstart1 & Hstart2 & Hσ) ]]; try done; try congruence.
+      destruct HH as [HH | [(?&?& Hstart) | (?&?&? & Hstart & Hstart1 & Hstart2 & Hσ) ]]; try done; try congruence.
       simplify_eq. iFrame. done.
   Qed.
 
@@ -473,7 +473,7 @@ Qed.
       destruct σ2 as [[ ws' locs'] inst'].
       destruct HStep as (H & -> & ->).
       eapply reduce_det in H as HH;[|apply Hred].
-      destruct HH as [HH | [[? Hstart] | (?&?&? & Hstart & Hstart1 & Hstart2 & Hσ) ]]; try done; try congruence.
+      destruct HH as [HH | [(?&?& Hstart) | (?&?&? & Hstart & Hstart1 & Hstart2 & Hσ) ]]; try done; try congruence.
       simplify_eq. iFrame. done.
   Qed.
 

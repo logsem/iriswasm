@@ -27,10 +27,10 @@ Notation "{{{{ P }}}} es {{{{ v , Q }}}}" :=
   Definition lse_expr_return a :=
       [BI_const (xx 0);
        BI_const (xx 42);
-       BI_store T_i32 None 0%N 0%N;
+       BI_store 0 T_i32 None 0%N 0%N;
        BI_call a;
        BI_const (xx 0);
-       BI_load T_i32 None 0%N 0%N].
+       BI_load 0 T_i32 None 0%N 0%N].
 
   Definition lse_return a :=
     to_e_list (lse_expr_return a).
@@ -135,10 +135,10 @@ Notation "{{{{ P }}}} es {{{{ v , Q }}}}" :=
   Definition lse_expr a n :=
       [BI_const (xx 0);
        BI_const (xx 42);
-       BI_store T_i32 None 0%N 0%N;
+       BI_store 0 T_i32 None 0%N 0%N;
        BI_call a;
        BI_const (xx 0);
-       BI_load T_i32 None 0%N 0%N;
+       BI_load 0 T_i32 None 0%N 0%N;
        BI_set_global n].
 
   Definition lse a n :=

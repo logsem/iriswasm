@@ -42,15 +42,15 @@ Section stack.
      [
        BI_if (Tf [] []) [BI_unreachable] [];
        BI_get_local 0 ;
-       BI_load T_i32 None N.zero N.zero ;
+       BI_load 0 T_i32 None N.zero N.zero ;
        i32const 4 ;
        BI_binop T_i32 (Binop_i BOI_add) ;
        BI_tee_local 2 ;
        BI_get_local 1 ;
-       BI_store T_i32 None N.zero N.zero ;
+       BI_store 0 T_i32 None N.zero N.zero ;
        BI_get_local 0 ;
        BI_get_local 2 ;
-       BI_store T_i32 None N.zero N.zero
+       BI_store 0 T_i32 None N.zero N.zero
       ].
         
     Definition push :=

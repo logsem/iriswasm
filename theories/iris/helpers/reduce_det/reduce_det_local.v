@@ -134,7 +134,7 @@ Proof.
       as [Hσ | [ [i Hstart] | (i1 & i2 & i3 & Hstart1 & Hstart2 & Hstart3 & Hσ) (* ] *)]].
     * left. by inversion Hσ ; subst.
     * right ; left. exists (i + 1). unfold first_instr => //=. unfold first_instr in Hstart.
-      rewrite Hstart => //=. repeat f_equiv. lia.
+      destruct Hstart as [im Hstart]. exists im. rewrite Hstart => //=. repeat f_equiv. lia.
     * repeat right. exists (i1 + 1),(i2 + 1),(i3 + 1). repeat split => //=.
       unfold first_instr => //= ; unfold first_instr in Hstart1 ;
                              rewrite Hstart1 => //=; repeat f_equiv; lia.

@@ -7,6 +7,8 @@ From Coq Require Import Program.
 
 Require Import Lia.
 
+Set Bullet Behavior "Strict Subproofs".
+
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -27,6 +29,7 @@ Proof.
     + move=> T. by inversion_clear T.
   - apply: Bool.ReflectT. by constructor.
 Qed.
+Print result_typingP.
 
 Lemma nth_error_ssr: forall {T: Type} (l: list T) n (x x0:T),
   List.nth_error l n = Some x -> nth x0 l n = x.
@@ -659,7 +662,7 @@ Proof.
     move/eqP in H; move/eqP in H1.
     subst.
     by apply/eqP.
-  by eapply IHts1; eauto.
+  - by eapply IHts1; eauto.
 Qed.
 
 Lemma ct_suffix_take: forall l1 l2 n,
@@ -1593,7 +1596,7 @@ Proof with auto_rewrite_cond.
       remember (take _ _) as cl.
       clear.
       induction cl => //=; destruct a...
-    + apply consume_type_not_bot in Hconsume.
+    - apply consume_type_not_bot in Hconsume.
       rewrite size_ct_list in Hconsume.
       exists (take (size cts - size l) cts)...
       unfold to_ct_list in Hconsume.
@@ -1873,12 +1876,12 @@ Proof with auto_rewrite_cond.
       destruct Hct2 as [tn' [Hct bet]]; subst.
       exists (tn' ++ [::T_i32]); split => //.
       apply bet_weakening.
-      apply bet_load => //; by destruct C.(tc_memory) => //=.
+      eapply bet_load => //. exact match_expr. 
     + replace ([::CTA_some T_i32; CTA_some v]) with (to_ct_list [::T_i32; v]) in Hct2 => //.
       apply consume_type_agree in Hct2.
       exists (tm ++ [::T_i32; v]); split => //.
       apply bet_weakening_empty_2.
-      apply bet_store => //; by destruct C.(tc_memory) => //=.
+      eapply bet_store => //. exact match_expr.
     + assert (c_types_agree (type_update cts (to_ct_list [::]) (CT_type [::T_i32])) tm) as Hct3.
       * simplify_type_update.
         by unfold produce => //=.
@@ -1887,13 +1890,13 @@ Proof with auto_rewrite_cond.
         rewrite cats0 in Hct.
         exists tn'; split => //.
         apply bet_weakening_empty_1.
-        apply bet_current_memory => //; by destruct C.(tc_memory) => //=.
+        eapply bet_current_memory => //. exact match_expr. 
     + replace ([::CTA_some T_i32]) with (to_ct_list [::T_i32]) in Hct2 => //=.
       apply type_update_type_agree in Hct2.
       destruct Hct2 as [tn' [Hct bet]]; subst.
       exists (tn' ++ [::T_i32]); split => //.
       apply bet_weakening.
-      apply bet_grow_memory => //; by destruct C.(tc_memory) => //=.
+      eapply bet_grow_memory => //. exact match_expr.
     + assert (c_types_agree (type_update cts (to_ct_list [::]) (CT_type [::typeof v])) tm) as Hct3.
       * simplify_type_update.
         by unfold produce => //=.
@@ -2016,9 +2019,9 @@ Proof with auto_rewrite_cond.
       rewrite H.
       rewrite ct_suffix_suffix...
     + destruct tf as [t1 t2] => //=...
-    + destruct (List.nth_error (tc_global C) i) => //=...
-    + unfold type_update => //=...
-    + unfold type_update => //=...
+      destruct (List.nth_error (tc_global C) i) => //=...
+      * unfold type_update => //=...
+      * unfold type_update => //=...
     + by destruct (tc_table C) eqn:Hctable => //=.
     + rewrite List.fold_left_app => //=.
       unfold c_types_agree in IHHbet1.

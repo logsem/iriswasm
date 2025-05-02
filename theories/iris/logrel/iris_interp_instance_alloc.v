@@ -2173,32 +2173,18 @@ Section InterpInstance.
       rewrite -Hlenir1 drop_app_length.
       rewrite -/ims in Hlenir1.
       iDestruct (big_sepL2_length with "Hmr") as %Hmemlen.
-      remember (ims).
-      destruct l.
-      { rewrite /mem_inits in Hmemlen. destruct mod_mems;auto.
-        destruct ((ext_mem_addrs
-                 (map (λ mexp : module_export, modexp_desc mexp) v_imps)));[|done].
-        (* the memory is declared *)
-        simpl nth_error.
-        rewrite module_inst_build_mems_length /= in Hmemlen.
-        destruct fmems;[done|].
-        assert ((n :: fmems) !! 0 = Some n) as Hlook1;auto.
-        assert (is_Some (mem_inits !! 0)) as [x Hlook2].
-        { apply module_inst_build_mems_is_Some;eauto. }
-        eapply module_inst_build_mems_lookup in Hlook2 as Heq;[|eauto].
-        revert Heq.
-        eassert (get_import_mem_count _ = length _) as ->.
-        { eapply get_import_count_length;simpl;eauto. }
-        simpl. intros Heq.
-        iDestruct (big_sepL2_lookup with "Hmr") as "[? $]";[apply Hlook2|apply Hlook1|].
-        by rewrite Heq module_inst_build_mem_max_opt module_inst_mem_base_func_max_opt. }
+      iApply big_sepL2_app.
       { (* the memory is imported *)
-        rewrite /ims in Heql.
-        remember (ext_mem_addrs (map (λ mexp : module_export, modexp_desc mexp) v_imps)).
-        destruct l0;[done|].
+        iApply big_sepL2_forall.
+        iSplit; first done.
+        iIntros (k m n Hm Hn).
+
         
-        assert (ext_t_mems t_imps !! 0 = Some m) as Htl; first by rewrite <- Heql.
-        assert (ext_mem_addrs (map (fun e => modexp_desc e) v_imps) !! 0 = Some n) as Hvl; first by rewrite <- Heql0.
+        remember (ext_mem_addrs (map (λ mexp : module_export, modexp_desc mexp) v_imps)) as l0.
+        
+        assert (ext_t_mems t_imps !! k = Some m) as Htl.
+        { done. } 
+        assert (ext_mem_addrs (map (fun e => modexp_desc e) v_imps) !! k = Some n) as Hvl; first by rewrite <- Heql0.
         specialize (import_mems_lookup Htl Hvl Hftc Httc Hmtc Hgtc) as HH.
         destruct HH as [k' [Hlook1 Hfm]]. destruct Hfm as [fm [Hlook2 Hfm]].
         unfold import_mem_nainv.
@@ -2218,6 +2204,29 @@ Section InterpInstance.
         revert Htyping. move/andP=>[? Htyping];revert Htyping;move/eqP =>Heq.
         rewrite Heq. iFrame "#".
       }
+      { rewrite /mem_inits /= in Hmemlen.
+        (* destruct mod_mems;auto. *) 
+(*        destruct ((ext_mem_addrs
+                 (map (λ mexp : module_export, modexp_desc mexp) v_imps)));[|done].
+        (* the memory is declared *) 
+        simpl nth_error. *)
+        rewrite module_inst_build_mems_length /= in Hmemlen.
+        iApply big_sepL2_forall.
+        iSplit; first done.
+        iIntros (k m n Hm Hn).
+(*         destruct fmems;[done|]. *)
+(*        assert ((n :: fmems) !! 0 = Some n) as Hlook1;auto.  *)
+        assert (is_Some (mem_inits !! k)) as [x Hlook2].
+        { apply module_inst_build_mems_is_Some;eauto. }
+        eapply module_inst_build_mems_lookup in Hlook2 as Heq;[|eauto].
+        revert Heq.
+        eassert (get_import_mem_count _ = length _) as ->.
+        { eapply get_import_count_length;simpl;eauto. }
+        simpl. intros Heq. 
+        iDestruct (big_sepL2_lookup with "Hmr") as "[? $]".
+        apply Hlook2. apply Hn. 
+        by rewrite Heq module_inst_build_mem_max_opt module_inst_mem_base_func_max_opt. }
+   
     }
 
     (* globals *)

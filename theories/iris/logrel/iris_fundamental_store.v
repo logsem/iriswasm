@@ -158,12 +158,12 @@ Section fundamental.
 
   (* ----------------------------------------- STORE --------------------------------------- *)
 
-  Lemma typing_store C a tp t off : tc_memory C ≠ [] ->
+  Lemma typing_store C a tp t off i m: List.nth_error (tc_memory C) i = Some m ->
                                     load_store_t_bounds a tp t ->
-                                    ⊢ semantic_typing C (to_e_list [BI_store t tp a off]) (Tf [T_i32; t] []).
+                                    ⊢ semantic_typing C (to_e_list [BI_store i t tp a off]) (Tf [T_i32; t] []).
   Proof.
     unfold semantic_typing, interp_expression.
-    iIntros (Hnil Hload i lh hl).
+    iIntros (Hnil Hload j lh hl).
     iIntros "#Hi [%Hlh_base [%Hlh_len [%Hlh_valid #Hcont]]]" (f vs) "[Hf Hfv] #Hv".
     iDestruct "Hv" as "[-> | Hv]".
     { take_drop_app_rewrite_twice 0 1.
@@ -177,9 +177,10 @@ Section fundamental.
     iDestruct "Hv" as (z) "->".
     iSimpl.
 
-    iDestruct (interp_instance_get_mem with "Hi") as (τm mem Hlook1 Hlook2) "[_ #Hm]";auto.
+    iDestruct (interp_instance_get_mem with "Hi") as (mem Hlook1) "[_ #Hm]";auto.
+    { exact Hnil. } 
     rewrite nth_error_lookup in Hlook1.
-    rewrite nth_error_lookup in Hlook2.
+
     iApply fupd_wp.
     iDestruct "Hfv" as (locs Hlocs) "[#Hlocs Hown]".
     iMod (na_inv_acc with "Hm Hown") as "(Hms & Hown & Hcls)";[solve_ndisj..|].

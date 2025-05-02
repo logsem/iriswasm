@@ -42,7 +42,7 @@ Definition is_full_op :=
     i32const 1 ;
     i32const 0 ;
     BI_get_local 0 ;
-    BI_load T_i32 None N.zero N.zero ;
+    BI_load 0 T_i32 None N.zero N.zero ;
     i32const 65536 ;
     BI_binop T_i32 (Binop_i (BOI_rem SX_U)) ;
     i32const 65532 ;

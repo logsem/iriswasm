@@ -321,10 +321,10 @@ Inductive basic_instruction : Type := (* be *)
   | BI_tee_local : immediate -> basic_instruction
   | BI_get_global : immediate -> basic_instruction
   | BI_set_global : immediate -> basic_instruction
-  | BI_load : value_type -> option (packed_type * sx) -> alignment_exponent -> static_offset -> basic_instruction
-  | BI_store : value_type -> option packed_type -> alignment_exponent -> static_offset -> basic_instruction
-  | BI_current_memory
-  | BI_grow_memory
+  | BI_load : immediate -> value_type -> option (packed_type * sx) -> alignment_exponent -> static_offset -> basic_instruction
+  | BI_store : immediate -> value_type -> option packed_type -> alignment_exponent -> static_offset -> basic_instruction
+  | BI_current_memory : immediate -> basic_instruction
+  | BI_grow_memory : immediate -> basic_instruction
   | BI_const : value -> basic_instruction
   | BI_unop : value_type -> unop -> basic_instruction
   | BI_binop : value_type -> binop -> basic_instruction

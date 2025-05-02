@@ -386,11 +386,9 @@ Definition sglob (s : store_record) (i : instance) (j : nat) : option global :=
 Definition sglob_val (s : store_record) (i : instance) (j : nat) : option value :=
   option_map g_val (sglob s i j).
 
-Definition smem_ind (s : store_record) (i : instance) : option nat :=
-  match i.(inst_memory) with
-  | nil => None
-  | cons k _ => Some k
-  end.
+Definition smem_ind (s : store_record) (i : instance) k : option nat :=
+  List.nth_error (inst_memory i) k.
+
 
 Definition tab_size (t: tableinst) : nat :=
   length (table_data t).

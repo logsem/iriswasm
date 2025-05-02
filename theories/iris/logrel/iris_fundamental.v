@@ -80,10 +80,10 @@ Section fundamental.
     { by apply typing_tee_local. }
     { by apply typing_get_global. }
     { by eapply typing_set_global. }
-    { by apply typing_load. }
-    { by apply typing_store. }
-    { by apply typing_current_memory. }
-    { by apply typing_grow_memory. }
+    { by eapply typing_load. }
+    { by eapply typing_store. }
+    { by eapply typing_current_memory. }
+    { by eapply typing_grow_memory. }
     { by apply typing_nil. }
     { rewrite to_e_list_cat.
       eapply typing_composition.

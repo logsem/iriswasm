@@ -476,55 +476,53 @@ Section determ.
     - clear IHnnn ; only_one [AI_basic (BI_const v) ; AI_basic (BI_set_global i)] Hred2.
       inversion Heqes ; subst ; rewrite H in H0 ; by inversion H0.
     - clear IHnnn ; only_one [AI_basic (BI_const (VAL_int32 k)) ;
-                              AI_basic (BI_load t None a off)] Hred2 ;
+                              AI_basic (BI_load im t None a off)] Hred2 ;
         inversion Heqes ; subst ; rewrite H in H2 ; inversion H2 ; subst ;
         rewrite H0 in H3 ; inversion H3 ; subst ; rewrite H1 in H4 ; inversion H4 ;
         try by subst.
     - clear IHnnn ; only_one [AI_basic (BI_const (VAL_int32 k)) ;
-                              AI_basic (BI_load t None a off)] Hred2 ;
+                              AI_basic (BI_load im t None a off)] Hred2 ;
         inversion Heqes ; subst ; rewrite H in H2 ; inversion H2 ; subst ;
         rewrite H0 in H3 ; inversion H3 ; subst ; rewrite H1 in H4 ; inversion H4 ;
         try by subst.
     - clear IHnnn ; only_one [AI_basic (BI_const (VAL_int32 k)) ;
-                              AI_basic (BI_load t (Some (tp, sx)) a off)] Hred2 ;
+                              AI_basic (BI_load im t (Some (tp, sx)) a off)] Hred2 ;
         inversion Heqes ; subst ; rewrite H in H2 ; inversion H2 ; subst ;
         rewrite H0 in H3 ; inversion H3 ; subst ; rewrite H1 in H4 ; inversion H4 ;
         try by subst. 
     - clear IHnnn ; only_one [AI_basic (BI_const (VAL_int32 k)) ;
-                              AI_basic (BI_load t (Some (tp, sx)) a off)] Hred2 ;
+                              AI_basic (BI_load im t (Some (tp, sx)) a off)] Hred2 ;
         inversion Heqes ; subst ; rewrite H in H2 ; inversion H2 ; subst ;
         rewrite H0 in H3 ; inversion H3 ; subst ; rewrite H1 in H4 ; inversion H4 ;
         try by subst.   
     - clear IHnnn ; only_one [AI_basic (BI_const (VAL_int32 k)) ; AI_basic (BI_const v) ;
-                              AI_basic (BI_store t None a off)] Hred2 ;
+                              AI_basic (BI_store im t None a off)] Hred2 ;
         inversion Heqes ; subst ; rewrite H0 in H4 ; inversion H4 ; subst ;
         rewrite H1 in H5 ; inversion H5 ; subst ; rewrite H2 in H6 ; by inversion H6.
     - clear IHnnn ; only_one [AI_basic (BI_const (VAL_int32 k)) ; AI_basic (BI_const v) ;
-                              AI_basic (BI_store t None a off)] Hred2 ;
+                              AI_basic (BI_store im t None a off)] Hred2 ;
         inversion Heqes ; subst ; rewrite H0 in H4 ; inversion H4 ; subst ;
         rewrite H1 in H5 ; inversion H5 ; subst ; rewrite H2 in H6 ; by inversion H6.
     - clear IHnnn ; only_one [AI_basic (BI_const (VAL_int32 k)) ; AI_basic (BI_const v) ;
-                              AI_basic (BI_store t (Some tp) a off)] Hred2 ;
+                              AI_basic (BI_store im t (Some tp) a off)] Hred2 ;
         inversion Heqes ; subst ; rewrite H0 in H4 ; inversion H4 ; subst ;
         rewrite H1 in H5 ; inversion H5 ; subst ; rewrite H2 in H6 ; by inversion H6.
     - clear IHnnn ; only_one [AI_basic (BI_const (VAL_int32 k)) ; AI_basic (BI_const v) ;
-                              AI_basic (BI_store t (Some tp) a off)] Hred2 ;
+                              AI_basic (BI_store im t (Some tp) a off)] Hred2 ;
         inversion Heqes ; subst ; rewrite H0 in H4 ; inversion H4 ; subst ;
         rewrite H1 in H5 ; inversion H5 ; subst ; rewrite H2 in H6 ; by inversion H6.
-    - clear IHnnn ; only_one [AI_basic BI_current_memory] Hred2.
-      rewrite H in H2 ; inversion H2 ; subst ; rewrite H0 in H3 ; by inversion H3.
+    - clear IHnnn ; only_one [AI_basic $ BI_current_memory im] Hred2.
+      inversion Heqes; subst. rewrite H in H2 ; inversion H2 ; subst ; rewrite H0 in H3 ; by inversion H3.
     (* the following two cases are the r_grow_memory cases. We do not guarantee
        determinism in these cases, but the second disjunct of the conclusion holds *)
     - right ; left.
-      exists 0.
-      replace [AI_basic (BI_const (VAL_int32 c)); AI_basic BI_grow_memory] with
-        ([AI_basic (BI_const (VAL_int32 c))] ++ [AI_basic BI_grow_memory] ++ []).
-      constructor => //=. by rewrite app_nil_r.
+      exists 0, im.
+      rewrite separate1.
+      constructor => //=. 
     - right ; left.
-      exists 0.
-      replace [AI_basic (BI_const (VAL_int32 c)); AI_basic BI_grow_memory] with
-        ([AI_basic (BI_const (VAL_int32 c))] ++ [AI_basic BI_grow_memory] ++ []).
-      constructor => //=. by rewrite app_nil_r.
+      exists 0, im.
+      rewrite separate1.
+      constructor => //=. 
     - by eapply label_det.
     - by eapply local_det.
   Qed.

@@ -20,11 +20,11 @@ Section fundamental.
 
   (* --------------------------------- CURRENT_MEMORY -------------------------------------- *)
 
-  Lemma typing_current_memory C : tc_memory C ≠ [] ->
-                                  ⊢ semantic_typing C (to_e_list [BI_current_memory]) (Tf [] [T_i32]).
+  Lemma typing_current_memory C i m : List.nth_error (tc_memory C) i = Some m ->
+                                  ⊢ semantic_typing C (to_e_list [BI_current_memory i]) (Tf [] [T_i32]).
   Proof.
     unfold semantic_typing, interp_expression.
-    iIntros (Hnil i lh hl).
+    iIntros (Hnil j lh hl).
     iIntros "#Hi [%Hlh_base [%Hlh_len [%Hlh_valid #Hcont]]]" (f vs) "[Hf Hfv] #Hv".
     iDestruct "Hv" as "[-> | Hv]".
     { take_drop_app_rewrite_twice 0 1.
@@ -36,9 +36,9 @@ Section fundamental.
     iDestruct (big_sepL2_length with "Hv") as %Hlen.
     destruct ws;[|done]. rewrite app_nil_l.
 
-    iDestruct (interp_instance_get_mem with "Hi") as (τm mem Hlook1 Hlook2) "[_ #Hm]";auto.
+    iDestruct (interp_instance_get_mem with "Hi") as (mem Hlook1) "[_ #Hm]";auto.
+    { exact Hnil. } 
     rewrite nth_error_lookup in Hlook1.
-    rewrite nth_error_lookup in Hlook2.
     iApply fupd_wp.
     iDestruct "Hfv" as (locs Hlocs) "[#Hlocs Hown]".
     iMod (na_inv_acc with "Hm Hown") as "(Hms & Hown & Hcls)";[solve_ndisj..|].

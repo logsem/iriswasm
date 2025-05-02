@@ -79,7 +79,8 @@ Proof.
           rewrite H7. by rewrite <- Hes2y.
         - right ; left. exists (i + 0). assert (lfilled 0 (LH_base [] [y]) (es ++ ys) les).
           unfold lfilled, lfill => //=. by subst.
-            by eapply starts_with_lfilled => //=.
+          destruct Hstart as [im Hstart].
+          exists im. by eapply starts_with_lfilled => //=.
         - repeat right. exists (i1 + 0),(i2 + 0),(i3 + 0). repeat split => //=.
           assert (lfilled 0 (LH_base [] [y]) (es ++ ys) les).
           unfold lfilled, lfill => //= ; by subst.
@@ -154,7 +155,7 @@ Proof.
       - right ; left. exists (i + 0). assert (lfilled 0 (LH_base [AI_basic (BI_const v)] [])
                                                  (bef ++ es ++ aft) les).
         unfold lfilled, lfill => //=. by subst ; rewrite app_nil_r.
-        eapply starts_with_lfilled => //=.
+        destruct Hstart as [im ?]. exists im. eapply starts_with_lfilled => //=.
       - repeat right. exists (i1 + 0),(i2 + 0),(i3 + 0). repeat split => //=.
         assert (lfilled 0 (LH_base [AI_basic (BI_const v)] [])
                         (bef ++ es ++ aft) les).
@@ -272,7 +273,7 @@ Proof.
         destruct (IHnnn _ _ _ _ _ _ H H0 H3)
           as [ Hσ | [ [i Hstart] | (i1 & i2 & i3 & Hstart1 & Hstart2 & Hstart3 & Hσ) (* ] *)]].
         - left. move/eqP in H2. inversion Hσ ; by subst.
-        - right ; left. exists (i + 1).
+        - right ; left. exists (i + 1). destruct Hstart as [im ?]. exists im.
           eapply starts_with_lfilled => //=.
         - repeat right. exists (S i1),(S i2),(S i3). repeat split => //=.
           unfold first_instr => //=.
@@ -322,7 +323,8 @@ Proof.
               (AI_label n es0 l0 :: ys)%list in H7 => //=.
           rewrite app_comm_cons H7. by rewrite <- Hes2y.
         - right ; left. exists (i + 0). assert (lfilled 0 (LH_base [] [y]) (AI_label n es0 l ::  ys) les).
-          unfold lfilled, lfill => //=. by subst.
+          unfold lfilled, lfill => //=. by subst. destruct Hstart as [im ?].
+          exists im.
           eapply starts_with_lfilled => //=.
         - repeat right. exists (i1 + 0),(i2 + 0),(i3 + 0). repeat split => //=.
           assert (lfilled 0 (LH_base [] [y]) (AI_label n es0 l :: ys) les).
@@ -397,6 +399,7 @@ Proof.
       - right ; left. exists (i + 0). assert (lfilled 0 (LH_base [AI_basic (BI_const v)] [])
                                                  (bef ++ AI_label n es0 l :: aft) les).
         unfold lfilled, lfill => //=. by subst ; rewrite app_nil_r.
+        destruct Hstart as [im Hstart]. exists im.
         eapply starts_with_lfilled => //=.
       - repeat right. exists (i1+0),(i2 + 0),(i3+0). repeat split => //=.
         assert (lfilled 0 (LH_base [AI_basic (BI_const v)] [])

@@ -243,8 +243,8 @@ Section reduce_properties_lemmas.
     no_reduce Heqes Hred.
   Qed.
   
-  Lemma reduce_load_false s0 f s' f' es es' x0 x1 x2 x3 :
-    es = [AI_basic (BI_load x0 x1 x2 x3)] ->
+  Lemma reduce_load_false s0 f s' f' es es' x0 x1 x2 x3 x4:
+    es = [AI_basic (BI_load x0 x1 x2 x3 x4)] ->
     reduce s0 f es s' f' es' -> False.
   Proof.
     intros Heq Hred.
@@ -252,8 +252,8 @@ Section reduce_properties_lemmas.
     no_reduce Heq Hred.
   Qed.
   
-  Lemma reduce_store_false s0 f s' f' es es' x0 x1 x2 x3 :
-    es = [AI_basic (BI_store x0 x1 x2 x3)] ->
+  Lemma reduce_store_false s0 f s' f' es es' x0 x1 x2 x3 x4:
+    es = [AI_basic (BI_store x0 x1 x2 x3 x4)] ->
     reduce s0 f es s' f' es' -> False.
   Proof.
     intros Heq Hred.
@@ -261,8 +261,8 @@ Section reduce_properties_lemmas.
     no_reduce Heq Hred.
   Qed.
   
-  Lemma reduce_store_false_2 s0 f s' f' es es' x0 x1 x2 x3 v :
-    es = [AI_basic (BI_const v); AI_basic (BI_store x0 x1 x2 x3)] ->
+  Lemma reduce_store_false_2 s0 f s' f' es es' x0 x1 x2 x3 x4 v :
+    es = [AI_basic (BI_const v); AI_basic (BI_store x0 x1 x2 x3 x4)] ->
     reduce s0 f es s' f' es' -> False.
   Proof.
     intros Heq Hred.
@@ -1425,39 +1425,39 @@ Section reduce_properties_lemmas.
     - exists [AI_basic (BI_const v)], (AI_basic (BI_set_global i)), [], [], k, lh ;
         repeat split => //=.
       by apply r_set_global.
-    - exists [AI_basic (BI_const (VAL_int32 k0))], (AI_basic (BI_load t None a off)),
+    - exists [AI_basic (BI_const (VAL_int32 k0))], (AI_basic (BI_load im t None a off)),
         [], [AI_basic (BI_const (wasm_deserialise bs t))], k, lh ; repeat split => //=.
       by apply (r_load_success _ H H0 H1).
-    - exists [AI_basic (BI_const (VAL_int32 k0))], (AI_basic (BI_load t None a off)),
+    - exists [AI_basic (BI_const (VAL_int32 k0))], (AI_basic (BI_load im t None a off)),
         [], [AI_trap], k, lh ; repeat split => //=.
       by apply (r_load_failure _ H H0 H1).
-    - exists [AI_basic (BI_const (VAL_int32 k0))], (AI_basic (BI_load t (Some (tp, sx)) a off)),
+    - exists [AI_basic (BI_const (VAL_int32 k0))], (AI_basic (BI_load im t (Some (tp, sx)) a off)),
         [], [AI_basic (BI_const (wasm_deserialise bs t))], k, lh ; repeat split => //=.
       by apply (r_load_packed_success _ H H0 H1).
-    - exists [AI_basic (BI_const (VAL_int32 k0))], (AI_basic (BI_load t (Some (tp, sx)) a off)),
+    - exists [AI_basic (BI_const (VAL_int32 k0))], (AI_basic (BI_load im t (Some (tp, sx)) a off)),
         [], [AI_trap], k, lh ; repeat split => //=.
       by apply (r_load_packed_failure _ H H0 H1).
     - exists [AI_basic (BI_const (VAL_int32 k0)); AI_basic (BI_const v)],
-        (AI_basic (BI_store t None a off)), [], [], k, lh ; repeat split => //=.
+        (AI_basic (BI_store im t None a off)), [], [], k, lh ; repeat split => //=.
       by apply (r_store_success _ H H0 H1 H2).
     - exists [AI_basic (BI_const (VAL_int32 k0)); AI_basic (BI_const v)],
-        (AI_basic (BI_store t None a off)), [], [AI_trap], k, lh ; repeat split => //=.
+        (AI_basic (BI_store im t None a off)), [], [AI_trap], k, lh ; repeat split => //=.
       by apply (r_store_failure _ H H0 H1 H2).
     - exists [AI_basic (BI_const (VAL_int32 k0)); AI_basic (BI_const v)],
-        (AI_basic (BI_store t (Some tp) a off)), [], [], k, lh ; repeat split => //=.
+        (AI_basic (BI_store im t (Some tp) a off)), [], [], k, lh ; repeat split => //=.
       by apply (r_store_packed_success _ H H0 H1 H2).
     - exists [AI_basic (BI_const (VAL_int32 k0)); AI_basic (BI_const v)],
-        (AI_basic (BI_store t (Some tp) a off)), [], [AI_trap], k, lh ; repeat split => //=.
+        (AI_basic (BI_store im t (Some tp) a off)), [], [AI_trap], k, lh ; repeat split => //=.
       by apply (r_store_packed_failure _ H H0 H1 H2).
-    - exists [], (AI_basic BI_current_memory), [],
+    - exists [], (AI_basic $ BI_current_memory im), [],
         [AI_basic (BI_const (VAL_int32 (Wasm_int.int_of_Z i32m (Z.of_nat (ssrnat.nat_of_bin n)))))],
         k, lh ; repeat split => //=.
       by apply (r_current_memory H H0 H1).
-    - exists [AI_basic (BI_const (VAL_int32 c))], (AI_basic BI_grow_memory), [],
+    - exists [AI_basic (BI_const (VAL_int32 c))], (AI_basic $ BI_grow_memory im), [],
         [AI_basic (BI_const (VAL_int32 (Wasm_int.int_of_Z i32m (Z.of_nat (ssrnat.nat_of_bin n)))))],
         k, lh ; repeat split => //=.
       by apply (r_grow_memory_success H H0 H1 H2).
-    - exists [AI_basic (BI_const (VAL_int32 c))], (AI_basic BI_grow_memory), [],
+    - exists [AI_basic (BI_const (VAL_int32 c))], (AI_basic $ BI_grow_memory im), [],
         [AI_basic (BI_const (VAL_int32 int32_minus_one))],
         k, lh ; repeat split => //=.
       by apply (r_grow_memory_failure _ H H0 H1).

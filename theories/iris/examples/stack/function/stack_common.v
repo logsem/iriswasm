@@ -548,7 +548,7 @@ Qed.
 Definition validate_stack_bound (x: immediate) :=
   [
     BI_get_local x ;
-    BI_load T_i32 None N.zero N.zero ;
+    BI_load 0 T_i32 None N.zero N.zero ;
     BI_drop
   ].
 
@@ -693,7 +693,7 @@ Lemma stack_load_0 v s n f E:
   ⌜ f.(f_inst).(inst_memory) !! 0 = Some n ⌝ -∗
   isStack v s n -∗
   ↪[frame] f -∗
-  WP [AI_basic (BI_const (value_of_uint v)); AI_basic (BI_load T_i32 None N.zero N.zero)] @ E
+  WP [AI_basic (BI_const (value_of_uint v)); AI_basic (BI_load 0 T_i32 None N.zero N.zero)] @ E
   {{ w, ⌜ w = immV [value_of_uint (v + (N.of_nat (length s) * 4))] ⌝ ∗ isStack v s n ∗ ↪[frame] f }}.
 Proof.
   iIntros "%Hinstmem Hs Hf" => /=.
@@ -736,7 +736,7 @@ Lemma stack_load_0_alt v s n f E k:
   ⌜ k = (v + N.of_nat (length s) * 4)%N ⌝ -∗
   isStack v s n -∗
   ↪[frame] f -∗
-  WP [AI_basic (BI_const (value_of_uint v)); AI_basic (BI_load T_i32 None N.zero N.zero)] @ E
+  WP [AI_basic (BI_const (value_of_uint v)); AI_basic (BI_load 0 T_i32 None N.zero N.zero)] @ E
   {{ w, ⌜ w = immV [value_of_uint k] ⌝ ∗ isStack v s n ∗ ↪[frame] f }}.
 Proof.
   iIntros "%Hinstmem %Hk Hs Hf" => /=.
@@ -750,7 +750,7 @@ Lemma stack_load_j v s n f E j sv:
   ⌜ (0 <= j < N.of_nat (length s))%N ⌝ -∗
   isStack v s n -∗
   ↪[frame] f -∗
-  WP [AI_basic (BI_const (value_of_uint (v + N.of_nat (length s) * 4 - 4 * j))); AI_basic (BI_load T_i32 None N.zero N.zero)] @ E
+  WP [AI_basic (BI_const (value_of_uint (v + N.of_nat (length s) * 4 - 4 * j))); AI_basic (BI_load 0 T_i32 None N.zero N.zero)] @ E
   {{ w, ⌜ w = immV [VAL_int32 sv] ⌝ ∗ isStack v s n ∗ ↪[frame] f }}.
 Proof.
   iIntros "%Hinstmem %Hsv %Hjbound Hs Hf" => /=.
@@ -810,7 +810,7 @@ Lemma stack_load_j_alt v s n f E j k sv:
   ⌜ (0 <= j < N.of_nat (length s))%N ⌝ -∗
   isStack v s n -∗
   ↪[frame] f -∗
-  WP [AI_basic (BI_const (value_of_uint k)); AI_basic (BI_load T_i32 None N.zero N.zero)] @ E
+  WP [AI_basic (BI_const (value_of_uint k)); AI_basic (BI_load 0 T_i32 None N.zero N.zero)] @ E
   {{ w, ⌜ w = immV [VAL_int32 sv] ⌝ ∗ isStack v s n ∗ ↪[frame] f }}.
 Proof.
   iIntros "%Hinstmem %Hk %Hsv %Hjbound Hs Hf" => /=.
@@ -824,7 +824,7 @@ Lemma stack_store_j v (s: list i32) n f E j sv (v0: i32):
   ⌜ (0 <= j < N.of_nat (length s))%N ⌝ -∗
   isStack v s n -∗
   ↪[frame] f -∗
-  WP [AI_basic (BI_const (value_of_uint (v + N.of_nat (length s) * 4 - 4 * j))); AI_basic (BI_const (VAL_int32 v0)); AI_basic (BI_store T_i32 None N.zero N.zero)] @ E
+  WP [AI_basic (BI_const (value_of_uint (v + N.of_nat (length s) * 4 - 4 * j))); AI_basic (BI_const (VAL_int32 v0)); AI_basic (BI_store 0 T_i32 None N.zero N.zero)] @ E
   {{ w, ⌜ w = immV [] ⌝ ∗ isStack v (<[ N.to_nat j := v0 ]> s) n ∗ ↪[frame] f }}.
 Proof.
   iIntros "%Hinstmem %Hsv %Hjbound Hs Hf" => /=.
@@ -885,7 +885,7 @@ Lemma stack_store_j_alt v (s: list i32) n f E j k sv (v0: i32):
   ⌜ (0 <= j < N.of_nat (length s))%N ⌝ -∗
   isStack v s n -∗
   ↪[frame] f -∗
-  WP [AI_basic (BI_const (value_of_uint k)); AI_basic (BI_const (VAL_int32 v0)); AI_basic (BI_store T_i32 None N.zero N.zero)] @ E
+  WP [AI_basic (BI_const (value_of_uint k)); AI_basic (BI_const (VAL_int32 v0)); AI_basic (BI_store 0 T_i32 None N.zero N.zero)] @ E
   {{ w, ⌜ w = immV [] ⌝ ∗ isStack v (<[ N.to_nat j := v0 ]> s) n ∗ ↪[frame] f }}.
 Proof.
   iIntros "%Hinstmem %Hsv %Hjbound Hs Hf" => /=.

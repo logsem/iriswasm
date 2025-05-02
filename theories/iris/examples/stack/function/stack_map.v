@@ -46,7 +46,7 @@ Section code.
 Definition map_initialise :=
   [
     BI_get_local 0 ;
-    BI_load T_i32 None N.zero N.zero ;
+    BI_load 0 T_i32 None N.zero N.zero ;
     BI_set_local 3 ;
   
     BI_get_local 0 ;
@@ -69,10 +69,10 @@ Definition map_loop_body :=
 
     (* Load the stack element, apply the function and store the result back to the stack *)
     BI_get_local 2 ;
-    BI_load T_i32 None N.zero N.zero ;
+    BI_load 0 T_i32 None N.zero N.zero ;
     BI_get_local 1 ;
     BI_call_indirect 1 ;
-    BI_store T_i32 None N.zero N.zero ;
+    BI_store 0 T_i32 None N.zero N.zero ;
 
     (* Keep the loop alive *)
     BI_br 0
@@ -830,7 +830,7 @@ Proof.
       rewrite drop_all.
       instantiate (1 := Ψ).
       by repeat iSplit => //.
-    }
+    } 
   }
   done.
 Qed.

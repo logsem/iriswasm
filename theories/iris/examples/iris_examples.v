@@ -257,12 +257,12 @@ Qed.
 
 Definition f1_instrs : seq.seq basic_instruction :=
   [BI_const (xx 0);
-   BI_load T_i32 None 0%N 0%N].
+   BI_load 0 T_i32 None 0%N 0%N].
 Definition f1 : iris.expr := to_e_list f1_instrs.
 Definition store42_instrs : seq.seq basic_instruction :=
   [BI_const (xx 0);
    BI_const (xx 42);
-   BI_store T_i32 None 0%N 0%N].
+   BI_store 0 T_i32 None 0%N 0%N].
 Definition store42 : iris.expr := to_e_list (store42_instrs).
 
 (* Module 2 *)
@@ -270,7 +270,7 @@ Definition store42 : iris.expr := to_e_list (store42_instrs).
 Definition store11_instrs : seq.seq basic_instruction :=
   [BI_const (xx 0);
    BI_const (xx 11);
-   BI_store T_i32 None 0%N 0%N].
+   BI_store 0 T_i32 None 0%N 0%N].
 Definition store11 : iris.expr := to_e_list (store11_instrs).
 Definition doIt_instrs i: seq.seq basic_instruction :=
   [BI_const (xx 0);

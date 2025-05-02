@@ -39,7 +39,7 @@ Section code.
 Definition new_stack :=
   [
     i32const 1 ;
-    BI_grow_memory ;
+    BI_grow_memory 0;
     BI_tee_local 0 ;
     i32const (-1) ;
     BI_relop T_i32 (Relop_i ROI_eq) ;  
@@ -51,7 +51,7 @@ Definition new_stack :=
         BI_binop T_i32 (Binop_i BOI_mul) ;
         BI_tee_local 0 ;
         BI_get_local 0 ;
-        BI_store T_i32 None N.zero N.zero ;
+        BI_store 0 T_i32 None N.zero N.zero ;
         BI_get_local 0 
       ]                             
   ].

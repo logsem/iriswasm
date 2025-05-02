@@ -428,7 +428,7 @@ Section control_rules.
       rewrite first_instr_const//.
     }
     destruct Hstep as [Hstep _].
-    eapply reduce_det in HStep as [Heq | [[i0 Hstart] |
+    eapply reduce_det in HStep as [Heq | [(i0& ?& Hstart) |
                                                           (i1 & i2 & i3 & Hstart & Hstart1 & Hstart2 & Hσ) ]] ; try congruence.
     2: apply Hstep.
     inversion Heq; subst; clear Heq.
@@ -469,7 +469,7 @@ Section control_rules.
       destruct σ2 as [[ws' locs'] inst'] => //=.
       iApply bi.sep_exist_l.
       destruct HStep as [H [-> ->]].
-      eapply reduce_det in H as [H | [[i0 Hstart] | 
+      eapply reduce_det in H as [H | [(i0&?& Hstart) | 
                                                       (i1 & i2 & i3 & Hstart & Hstart1 & Hstart2 & Hσ)]];
         last (by eapply r_simple, rs_block) ;
         first (inversion H; subst; clear H ; by iExists f; iFrame) ;
@@ -499,7 +499,7 @@ Section control_rules.
       iIntros "!>" (es1 σ2 efs HStep) "!>".
       destruct σ2 as [[ws' locs'] inst'] => //=.
       destruct HStep as [H [-> ->]].
-      eapply reduce_det in H as [H | [[i0 Hstart] |
+      eapply reduce_det in H as [H | [(i0&?& Hstart) |
                                                       (i1 & i2 & i3 & Hstart & Hstart1 & Hstart2 & Hσ)]];
         (try by apply r_simple ; apply rs_label_const ;
          eapply to_val_const_list ; apply Hval) .
@@ -729,7 +729,7 @@ Section control_rules.
     { apply first_instr_local. eapply starts_with_lfilled;[|apply Hfill].
       apply first_instr_const;auto. }
     iApply bi.sep_exist_l.
-    eapply reduce_det in H as [H | [[i0 Hstart] |
+    eapply reduce_det in H as [H | [(i0 & ? & Hstart) |
                                                     (i1 & i2 & i3 & Hstart & Hstart1 & Hstart2 & Hσ)  ]];
       try congruence;
       try by assert (lfilled 0 (LH_base vs []) [AI_basic (BI_block (Tf t1s t2s) es)]
@@ -869,7 +869,7 @@ Section control_rules.
       apply first_instr_local. eapply starts_with_lfilled;[|apply Hfill].
       apply first_instr_const;auto. }
     iApply bi.sep_exist_l.
-    eapply reduce_det in H as [H | [[i0 Hstart] |
+    eapply reduce_det in H as [H | [(i0 & ? & Hstart) |
                                                     (i1 & i2 & i3 & Hstart & Hstart1 & Hstart2 & Hσ) ]];
       try congruence;
       try by apply lfilled_Ind_Equivalent in Hfill ;
@@ -986,7 +986,7 @@ Section control_rules.
       assert (first_instr [AI_local n1 f1 LI] = Some (AI_basic (BI_loop (Tf t1s t2s) es),S (0 + i))) as HH.
       { apply first_instr_local. eapply starts_with_lfilled;[|apply Hfill].
         apply first_instr_const. auto. }
-      eapply reduce_det in H as [H | [[i0 Hstart] |
+      eapply reduce_det in H as [H | [(i0 & ? & Hstart) |
                                                       (i1 & i2 & i3 & Hstart & Hstart1 & Hstart2 & Hσ) ]];
         try congruence;
         try by assert (lfilled 0 (LH_base vs []) [AI_basic (BI_loop (Tf t1s t2s) es)]
@@ -1103,7 +1103,7 @@ Section control_rules.
       iApply bi.sep_exist_l.
       assert (first_instr [AI_local n1 f1 LI] = Some (AI_basic (BI_if tf e1s e2s),S (0 + i))) as HH.
       { apply first_instr_local. eapply starts_with_lfilled;[|apply Hfill]. auto. }
-      eapply reduce_det in H as [H | [[i0 Hstart] |
+      eapply reduce_det in H as [H | [(i0 & ? & Hstart) |
                                                       (i1 & i2 & i3 & Hstart & Hstart1 & Hstart2 & Hσ)  ]];
         try congruence;
         try by assert (lfilled 0 (LH_base vs []) [AI_basic (BI_loop (Tf t1s t2s) es)]
@@ -1220,7 +1220,7 @@ Section control_rules.
       assert (first_instr [AI_local n1 f1 LI] = Some (AI_basic (BI_if tf e1s e2s),S (0 + i))) as HH.
       { apply first_instr_local. eapply starts_with_lfilled;[|apply Hfill];auto. }
       iApply bi.sep_exist_l.
-      eapply reduce_det in H as [H | [[i0 Hstart] |
+      eapply reduce_det in H as [H | [(i0 & ? & Hstart) |
                                                       (i1 & i2 & i3 & Hstart & Hstart1 & Hstart2 & Hσ) ]];
         try congruence;
         try by assert (lfilled 0 (LH_base [AI_basic (BI_const (VAL_int32 n))] [])
@@ -1331,7 +1331,7 @@ Section control_rules.
       assert (first_instr [AI_local n1 f1 LI] = Some (AI_basic (BI_br_if i),S (0 + j))) as HH.
       { apply first_instr_local. eapply starts_with_lfilled;[|apply Hfill];auto. }
       iApply bi.sep_exist_l.
-      eapply reduce_det in H as [H | [[i0 Hstart] | 
+      eapply reduce_det in H as [H | [(i0 & ? & Hstart) | 
                                                       (i1 & i2 & i3 & Hstart & Hstart1 & Hstart2 & Hσ) ]];
         try congruence;
         try by assert (lfilled 0 (LH_base [AI_basic (BI_const (VAL_int32 n))] [])
@@ -1473,7 +1473,7 @@ Section control_rules.
       assert (first_instr [AI_local n1 f1 LI] = Some (AI_basic (BI_br_table iss i),S (0 + k))) as HH.
       { apply first_instr_local. eapply starts_with_lfilled;[|apply Hfill];auto. }
       iApply bi.sep_exist_l.
-      eapply reduce_det in H as [H | [[i0 Hstart] |
+      eapply reduce_det in H as [H | [(i0 & ? & Hstart) |
                                                       (i1 & i2 & i3 & Hstart & Hstart1 & Hstart2 & Hσ) ]];
         try congruence;
         try by assert (lfilled 0 (LH_base [AI_basic (BI_const (VAL_int32 n))] [])
@@ -1583,7 +1583,7 @@ Section control_rules.
       assert (first_instr [AI_local n1 f1 LI] = Some (AI_basic (BI_br_table iss i),S (0 + j))) as HH.
       { apply first_instr_local. eapply starts_with_lfilled;[|apply Hfill];auto. }
       iApply bi.sep_exist_l.
-      eapply reduce_det in H as [H | [[i0 Hstart] |
+      eapply reduce_det in H as [H | [(i0 & ? & Hstart) |
                                                       (i1 & i2 & i3 & Hstart & Hstart1 & Hstart2 & Hσ) ]];
         try congruence;
         try by assert (lfilled 0 (LH_base [AI_basic (BI_const (VAL_int32 n))] [])

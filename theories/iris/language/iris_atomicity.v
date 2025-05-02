@@ -17,8 +17,8 @@ Local Definition to_val := iris.to_val.
 (* The following atomicity definition will be useful for opening invariants *)
 Definition is_atomic (e : expr) : Prop :=
   match e with
-  | [::AI_basic (BI_const (VAL_int32 _)); AI_basic (BI_load _ _ _ _)] => True
-  | [::AI_basic (BI_const (VAL_int32 _)); AI_basic (BI_const _); AI_basic (BI_store _ _ _ _)] => True
+  | [::AI_basic (BI_const (VAL_int32 _)); AI_basic (BI_load _ _ _ _ _)] => True
+  | [::AI_basic (BI_const (VAL_int32 _)); AI_basic (BI_const _); AI_basic (BI_store _ _ _ _ _)] => True
   | [::AI_basic (BI_const _); AI_basic (BI_set_global _)] => True
   | [::AI_basic (BI_get_global _)] => True
   | [::AI_trap] => True
@@ -32,8 +32,8 @@ Ltac destruct_match_goal :=
   end.
 Lemma is_atomic_eq (e : expr) :
   is_atomic e ->
-  (∃ k x1 x2 x3 x4, e = [::AI_basic (BI_const (VAL_int32 k)); AI_basic (BI_load x1 x2 x3 x4)]) ∨
-  (∃ k v x1 x2 x3 x4, e = [::AI_basic (BI_const (VAL_int32 k)); AI_basic (BI_const v); AI_basic (BI_store x1 x2 x3 x4)]) ∨
+  (∃ k x1 x2 x3 x4 x5, e = [::AI_basic (BI_const (VAL_int32 k)); AI_basic (BI_load x1 x2 x3 x4 x5)]) ∨
+  (∃ k v x1 x2 x3 x4 x5, e = [::AI_basic (BI_const (VAL_int32 k)); AI_basic (BI_const v); AI_basic (BI_store x1 x2 x3 x4 x5)]) ∨
   (∃ v g, e = [::AI_basic (BI_const v); AI_basic (BI_set_global g)]) ∨
   (∃ g, e = [::AI_basic (BI_get_global g)]) ∨
   (e = [::AI_trap]).
@@ -55,9 +55,9 @@ Proof.
     move => *. right;left. repeat eexists. }
 Qed.
 
-Lemma atomic_no_hole_load s0 f es s' f' es' k lh k0 x0 x1 x2 x3 :
+Lemma atomic_no_hole_load s0 f es s' f' es' k lh k0 x0 x1 x2 x3 x4:
   reduce s0 f es s' f' es' -> 
-  lfilled k lh es [::AI_basic (BI_const (VAL_int32 k0)); AI_basic (BI_load x0 x1 x2 x3)] ->
+  lfilled k lh es [::AI_basic (BI_const (VAL_int32 k0)); AI_basic (BI_load x0 x1 x2 x3 x4)] ->
   lh = LH_base [] [] ∧ k = 0.
 Proof.  
   intros Hred Hfill.
@@ -72,9 +72,9 @@ Proof.
     eapply reduce_load_false;eauto. }
 Qed.
     
-Lemma atomic_no_hole_store s0 f es s' f' es' k lh k0 v x0 x1 x2 x3 :
+Lemma atomic_no_hole_store s0 f es s' f' es' k lh k0 v x0 x1 x2 x3 x4:
   reduce s0 f es s' f' es' -> 
-  lfilled k lh es [::AI_basic (BI_const (VAL_int32 k0)); AI_basic (BI_const v); AI_basic (BI_store x0 x1 x2 x3)] ->
+  lfilled k lh es [::AI_basic (BI_const (VAL_int32 k0)); AI_basic (BI_const v); AI_basic (BI_store x0 x1 x2 x3 x4)] ->
   lh = LH_base [] [] ∧ k = 0.
 Proof.
   intros Hred Hfill.
@@ -158,7 +158,7 @@ Proof.
   destruct Hstep as [Hstep [-> ->]].
   induction Hstep using reduce_ind.
   all: apply is_atomic_eq in Ha as Heq.
-  all: destruct Heq as [(?&?&?&?&?&?)|[(?&?&?&?&?&?&?)|[(?&?&?)|[(?&?)|?]]]];simplify_eq; eauto.
+  all: destruct Heq as [(?&?&?&?&?&?&?)|[(?&?&?&?&?&?&?&?)|[(?&?&?)|[(?&?)|?]]]];simplify_eq; eauto.
   all: try by (do 2 (destruct vcs;try done)).
   all: try by (do 3 (destruct vcs;try done)).
   { inversion H;subst;eauto.

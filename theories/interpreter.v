@@ -297,10 +297,10 @@ Definition run_one_step (call : run_stepE ~> itree (run_stepE +' eff))
       else ret (s, f, crash_error)
     else ret (s, f, crash_error)
 
-    | AI_basic (BI_load t None a off) =>
+    | AI_basic (BI_load i t None a off) =>
       if ves is VAL_int32 k :: ves' then
         expect
-          (smem_ind s f.(f_inst))
+          (smem_ind s f.(f_inst) i)
           (fun j =>
              if List.nth_error s.(s_mems) j is Some mem_s_j then
                expect
@@ -311,10 +311,10 @@ Definition run_one_step (call : run_stepE ~> itree (run_stepE +' eff))
           (ret (s, f, crash_error))
       else ret (s, f, crash_error)
 
-    | AI_basic (BI_load t (Some (tp, sx)) a off) =>
+    | AI_basic (BI_load i t (Some (tp, sx)) a off) =>
       if ves is VAL_int32 k :: ves' then
         expect
-          (smem_ind s f.(f_inst))
+          (smem_ind s f.(f_inst) i)
           (fun j =>
              if List.nth_error s.(s_mems) j is Some mem_s_j then
                expect
@@ -325,12 +325,12 @@ Definition run_one_step (call : run_stepE ~> itree (run_stepE +' eff))
           (ret (s, f, crash_error))
       else ret (s, f, crash_error)
 
-    | AI_basic (BI_store t None a off) =>
+    | AI_basic (BI_store i t None a off) =>
       if ves is v :: VAL_int32 k :: ves' then
         if types_agree t v
         then
           expect
-            (smem_ind s f.(f_inst))
+            (smem_ind s f.(f_inst) i)
             (fun j =>
                if List.nth_error s.(s_mems) j is Some mem_s_j then
                  expect
@@ -343,12 +343,12 @@ Definition run_one_step (call : run_stepE ~> itree (run_stepE +' eff))
         else ret (s, f, crash_error)
       else ret (s, f, crash_error)
 
-    | AI_basic (BI_store t (Some tp) a off) =>
+    | AI_basic (BI_store i t (Some tp) a off) =>
       if ves is v :: VAL_int32 k :: ves' then
         if types_agree t v
         then
           expect
-            (smem_ind s f.(f_inst))
+            (smem_ind s f.(f_inst) i)
             (fun j =>
                if List.nth_error s.(s_mems) j is Some mem_s_j then
                  expect
@@ -361,19 +361,19 @@ Definition run_one_step (call : run_stepE ~> itree (run_stepE +' eff))
         else ret (s, f, crash_error)
       else ret (s, f, crash_error)
 
-    | AI_basic BI_current_memory =>
+    | AI_basic (BI_current_memory i) =>
       expect
-        (smem_ind s f.(f_inst))
+        (smem_ind s f.(f_inst) i)
         (fun j =>
            if List.nth_error s.(s_mems) j is Some s_mem_s_j then
              (ret (s, f, RS_normal (vs_to_es (VAL_int32 (Wasm_int.int_of_Z i32m (Z.of_nat (mem_size s_mem_s_j))) :: ves))))
            else ret (s, f, crash_error))
         (ret (s, f, crash_error))
 
-    | AI_basic BI_grow_memory =>
+    | AI_basic (BI_grow_memory i) =>
       if ves is VAL_int32 c :: ves' then
         expect
-          (smem_ind s f.(f_inst))
+          (smem_ind s f.(f_inst) i)
           (fun j =>
             if List.nth_error s.(s_mems) j is Some s_mem_s_j then
               let: l := mem_size s_mem_s_j in
