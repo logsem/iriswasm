@@ -1,5 +1,5 @@
-(lang dune 3.17)
-(using coq 0.2)
+(lang dune 3.16)
+(using coq 0.4)
 (using mdx 0.2)
 (name iris-wasm)
 (version 2.0)

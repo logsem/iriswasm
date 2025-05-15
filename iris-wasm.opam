@@ -26,7 +26,7 @@ license: "MIT"
 homepage: "https://github.com/logsem/iriswasm"
 bug-reports: "https://github.com/logsem/iriswasm/issues"
 depends: [
-  "dune" {>= "3.17"}
+  "dune" {>= "3.16"}
   "coq" {>= "8.20.1"}
   "coq-iris" {>= "4.3.0"}
   "coq-stdpp" {>= "1.11.0"}
