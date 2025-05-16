@@ -1,5 +1,5 @@
 (lang dune 3.16)
-(using coq 0.4)
+(using coq 0.8)
 (using mdx 0.2)
 (name iris-wasm)
 (version 2.0)
@@ -36,9 +36,4 @@
     Conrad Watt
     Philippa Gardner
     Lars Birkedal
-  )
-  )
-
-
-
-(warnings (deprecated_coq_lang_lt_08 disabled))
+  ))
