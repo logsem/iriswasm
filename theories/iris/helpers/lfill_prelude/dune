@@ -2,5 +2,5 @@
   (name Wasm.iris.helpers.lfill_prelude)
    (package iris-wasm)
   (flags -w -ambiguous-paths -w -notation-overridden -w -abstract-large-number -w -extraction-reserved-identifier)
- (theories Wasm)
+ (theories Wasm stdpp)
 )
